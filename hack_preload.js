@@ -1402,12 +1402,9 @@ if (typeof window !== 'undefined' && !window.__ANTIGRAVITY_ZH_PATCHED__) {
 
         function translateWithShortcut(text) {
             if (!text || typeof text !== 'string') return null;
-            const normalizedText = text.replace(/\s+/g, ' ');
+            const normalizedText = text.replace(/[\u00a0\u200b\s]+/g, ' ');
             const trimmed = normalizedText.trim();
             if (translateMap[trimmed]) {
-                if (text.includes(trimmed)) {
-                    return text.replace(trimmed, translateMap[trimmed]);
-                }
                 return translateMap[trimmed];
             }
             
@@ -1552,30 +1549,53 @@ if (typeof window !== 'undefined' && !window.__ANTIGRAVITY_ZH_PATCHED__) {
             return false;
         }
 
+        // 劫持 attachShadow 以支持 Shadow DOM 内部元素的自动监听与翻译
+        const originalAttachShadow = Element.prototype.attachShadow;
+        if (originalAttachShadow) {
+            Element.prototype.attachShadow = function(init) {
+                const shadow = originalAttachShadow.call(this, init);
+                try {
+                    translateNode(shadow);
+                    const shadowObserver = new MutationObserver((mutations) => {
+                        for (let mutation of mutations) {
+                            scheduleTranslate(mutation.target || shadow);
+                        }
+                    });
+                    shadowObserver.observe(shadow, { childList: true, subtree: true, characterData: true, attributes: true });
+                } catch (e) {}
+                return shadow;
+            };
+        }
+
         function translateNode(node) {
-            if (shouldSkipNode(node)) {
+            if (!node || shouldSkipNode(node)) {
                 return;
+            }
+            if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE || node.nodeType === Node.ELEMENT_NODE) {
+                if (node.shadowRoot) {
+                    translateNode(node.shadowRoot);
+                }
             }
             if (node.nodeType === Node.TEXT_NODE) {
                 let text = node.textContent;
                 const translated = translateWithShortcut(text);
-                if (translated) {
+                if (translated && translated !== text) {
                     node.textContent = translated;
                 }
             } else if (node.nodeType === Node.ELEMENT_NODE) {
                 // 处理已有属性
                 if (node.placeholder) {
                     const translated = translateWithShortcut(node.placeholder);
-                    if (translated) node.placeholder = translated;
+                    if (translated && translated !== node.placeholder) node.placeholder = translated;
                 }
                 if (node.title) {
                     const translated = translateWithShortcut(node.title);
-                    if (translated) node.title = translated;
+                    if (translated && translated !== node.title) node.title = translated;
                 }
                 const ariaLabel = node.getAttribute('aria-label');
                 if (ariaLabel) {
                     const translated = translateWithShortcut(ariaLabel);
-                    if (translated) node.setAttribute('aria-label', translated);
+                    if (translated && translated !== ariaLabel) node.setAttribute('aria-label', translated);
                 }
                 for (const attrName of translatableAttributes) {
                     if (attrName === 'title' || attrName === 'placeholder' || attrName === 'aria-label') {
@@ -1584,14 +1604,14 @@ if (typeof window !== 'undefined' && !window.__ANTIGRAVITY_ZH_PATCHED__) {
                     const attrValue = node.getAttribute(attrName);
                     if (attrValue) {
                         const translated = translateWithShortcut(attrValue);
-                        if (translated) node.setAttribute(attrName, translated);
+                        if (translated && translated !== attrValue) node.setAttribute(attrName, translated);
                     }
                 }
                 // 处理按钮 value 属性
                 if (node.tagName === 'INPUT' && (node.type === 'button' || node.type === 'submit' || node.type === 'reset')) {
                     if (node.value) {
                         const translated = translateWithShortcut(node.value);
-                        if (translated) node.value = translated;
+                        if (translated && translated !== node.value) node.value = translated;
                     }
                 }
                 // 递归处理子节点
@@ -1600,6 +1620,8 @@ if (typeof window !== 'undefined' && !window.__ANTIGRAVITY_ZH_PATCHED__) {
                 }
             }
         }
+
+        let scheduleTranslate = (node) => {};
 
         function initHack() {
             if (!document.documentElement) {
@@ -1627,7 +1649,7 @@ if (typeof window !== 'undefined' && !window.__ANTIGRAVITY_ZH_PATCHED__) {
             // 3. 监听动态加载的内容并自动翻译（监听整个 HTML 文档）
             const pendingNodes = new Set();
             let scheduled = false;
-            const scheduleTranslate = (node) => {
+            scheduleTranslate = (node) => {
                 if (!node || shouldSkipNode(node)) {
                     return;
                 }
@@ -1655,14 +1677,26 @@ if (typeof window !== 'undefined' && !window.__ANTIGRAVITY_ZH_PATCHED__) {
                         }
                     } else if (mutation.type === 'characterData') {
                         scheduleTranslate(mutation.target);
+                    } else if (mutation.type === 'attributes') {
+                        scheduleTranslate(mutation.target);
                     }
                 }
             });
             observer.observe(document.documentElement, { 
                 childList: true, 
                 subtree: true,
-                characterData: true
+                characterData: true,
+                attributes: true,
+                attributeFilter: ['data-state', 'class', 'style', 'title', 'aria-label', 'data-tooltip', 'hidden', 'aria-expanded']
             });
+
+            // 4. 定时针对防漏 Tooltip & 浮动框容器扫盘
+            setInterval(() => {
+                const overlays = document.querySelectorAll('[role="tooltip"], [class*="tooltip"], [data-radix-popper-content-wrapper], [data-floating-ui-focusable], div[style*="position: fixed"], div[style*="position: absolute"]');
+                for (const overlay of overlays) {
+                    translateNode(overlay);
+                }
+            }, 300);
         }
 
         initHack();
