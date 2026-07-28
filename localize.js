@@ -387,6 +387,53 @@ function patchLoadingOverlay(tempUnpackDir) {
     }
 }
 
+function patchMainProcess(tempUnpackDir) {
+    const mainJsPath = path.join(tempUnpackDir, 'dist', 'main.js');
+    if (!fs.existsSync(mainJsPath)) {
+        logWarn('未发现 main.js，跳过主进程确认弹窗汉化。');
+        return;
+    }
+
+    let content = fs.readFileSync(mainJsPath, 'utf8');
+    let modified = false;
+
+    if (content.includes("message: 'Are you sure you want to quit?'")) {
+        content = content.replace("message: 'Are you sure you want to quit?'", "message: '您确定要退出吗？'");
+        modified = true;
+    }
+    if (content.includes('message: "Are you sure you want to quit?"')) {
+        content = content.replace('message: "Are you sure you want to quit?"', 'message: "您确定要退出吗？"');
+        modified = true;
+    }
+    if (content.includes("detail: 'There may be agents or background tasks running.'")) {
+        content = content.replace("detail: 'There may be agents or background tasks running.'", "detail: '可能仍有智能体或后台任务正在运行。'");
+        modified = true;
+    }
+    if (content.includes('detail: "There may be agents or background tasks running."')) {
+        content = content.replace('detail: "There may be agents or background tasks running."', 'detail: "可能仍有智能体或后台任务正在运行。"');
+        modified = true;
+    }
+    if (content.includes("title: 'Confirm Quit'")) {
+        content = content.replace("title: 'Confirm Quit'", "title: '确认退出'");
+        modified = true;
+    }
+    if (content.includes('buttons: [\'Cancel\', \'Quit\']')) {
+        content = content.replace('buttons: [\'Cancel\', \'Quit\']', 'buttons: [\'取消\', \'退出\']');
+        modified = true;
+    }
+    if (content.includes('buttons: ["Cancel", "Quit"]')) {
+        content = content.replace('buttons: ["Cancel", "Quit"]', 'buttons: ["取消", "退出"]');
+        modified = true;
+    }
+
+    if (modified) {
+        fs.writeFileSync(mainJsPath, content, 'utf8');
+        logSuccess('主进程退出对话框汉化完成。');
+    } else {
+        logInfo('主进程 main.js 未匹配到需要替换的退出弹窗文本。');
+    }
+}
+
 function inferUnpackDirs(sidecarPath) {
     if (!fs.existsSync(sidecarPath)) {
         return [];
@@ -553,6 +600,7 @@ async function main() {
 
         injectPreload(tempUnpackDir, args.force);
         patchLoadingOverlay(tempUnpackDir);
+        patchMainProcess(tempUnpackDir);
         packAndSwap(tempUnpackDir, asarPath, args.dryRun);
     } catch (err) {
         logError(err.message);
