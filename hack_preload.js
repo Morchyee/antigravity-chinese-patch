@@ -190,6 +190,21 @@ if (typeof window !== 'undefined' && !window.__ANTIGRAVITY_ZH_PATCHED__) {
             'Configure when follow-up messages are sent': '配置何时发送后续消息',
             'Queue After Turn': '本轮结束后排队',
             'Send Immediately': '立即发送',
+            'Queues after the turn': '本轮结束后排队',
+            'queues after the turn': '本轮结束后排队',
+            'Queues after the turn.': '本轮结束后排队。',
+            'queues after the turn.': '本轮结束后排队。',
+            'Sends immediately': '立即发送',
+            'sends immediately': '立即发送',
+            'Sends immediately.': '立即发送。',
+            'sends immediately.': '立即发送。',
+            'On empty prompt, sends next in queue': '输入框为空时，发送队列中的下一条',
+            'on empty prompt, sends next in queue': '输入框为空时，发送队列中的下一条',
+            'On empty prompt, sends next in queue.': '输入框为空时，发送队列中的下一条。',
+            'on empty prompt, sends next in queue.': '输入框为空时，发送队列中的下一条。',
+            '↵ Queues after the turn': '↵ 本轮结束后排队',
+            '⌥↵ Sends immediately': '⌥↵ 立即发送',
+            '⌥↵ On empty prompt, sends next in queue': '⌥↵ 输入框为空时，发送队列中的下一条',
             'Keyboard shortcuts': '键盘快捷键',
             'Prevent Sleep': '防止休眠',
             'Prevent the computer from sleeping while the app is running.': '在应用运行时防止电脑进入休眠状态。',
@@ -1488,15 +1503,15 @@ if (typeof window !== 'undefined' && !window.__ANTIGRAVITY_ZH_PATCHED__) {
                 core = core.substring(0, shortcutMatch.index).trim();
             }
             
-            // 2. Strip prefix arrows/chevrons/colons/dots
-            const prefixMatch = core.match(/^([>›→»˅˄∨^v▼▲▾▴▽△↓↑◄►◂▸◃▹‹<←«\s|:：]+)/);
+            // 2. Strip prefix arrows/chevrons/colons/dots/shortcuts
+            const prefixMatch = core.match(/^([>›→»˅˄∨^v▼▲▾▴▽△↓↑◄►◂▸◃▹‹<←«\s|:：⌘⌥⇧⌃↵⏎⎋⇥⌫⌦^~]+)/);
             if (prefixMatch && prefixMatch[0].length < core.length) {
                 prefixPart = prefixMatch[0];
                 core = core.substring(prefixMatch[0].length).trim();
             }
-            
-            // 3. Strip suffix arrows/chevrons/colons/dots
-            const suffixMatch = core.match(/([>›→»˅˄∨^v▼▲▾▴▽△↓↑◄►◂▸◃▹‹<←«\s|:：]+)$/);
+
+            // 3. Strip suffix arrows/chevrons/colons/dots/shortcuts
+            const suffixMatch = core.match(/([>›→»˅˄∨^v▼▲▾▴▽△↓↑◄►◂▸◃▹‹<←«\s|:：⌘⌥⇧⌃↵⏎⎋⇥⌫⌦^~]+)$/);
             if (suffixMatch && suffixMatch[0].length < core.length) {
                 suffixPart = suffixMatch[0] + suffixPart;
                 core = core.substring(0, core.length - suffixMatch[0].length).trim();
