@@ -1056,6 +1056,16 @@ if (typeof window !== 'undefined' && !window.__ANTIGRAVITY_ZH_PATCHED__) {
             'terminal': '终端',
             'Terminals': '终端',
             'terminals': '终端',
+            'Standalone Terminals': '独立终端',
+            'Standalone terminals': '独立终端',
+            'standalone terminals': '独立终端',
+            'Standalone Terminal': '独立终端',
+            'standalone terminal': '独立终端',
+            'Delete Terminal': '删除终端',
+            'delete terminal': '删除终端',
+            'Delete terminal': '删除终端',
+            'Remove Terminal': '移除终端',
+            'remove terminal': '移除终端',
             'Add Terminal': '添加终端',
             'add terminal': '添加终端',
             'New Terminal': '新建终端',
@@ -1068,6 +1078,18 @@ if (typeof window !== 'undefined' && !window.__ANTIGRAVITY_ZH_PATCHED__) {
             'clear terminal': '清空终端',
             'Kill Terminal': '终止终端',
             'kill terminal': '终止终端',
+            'Duplicate Terminal': '复制终端',
+            'duplicate terminal': '复制终端',
+            'Rename Terminal': '重命名终端',
+            'rename terminal': '重命名终端',
+            'Restart Terminal': '重启终端',
+            'restart terminal': '重启终端',
+            'Terminal Sessions': '终端会话',
+            'terminal sessions': '终端会话',
+            'Conversation Terminals': '对话终端',
+            'conversation terminals': '对话终端',
+            'Project Terminals': '项目终端',
+            'project terminals': '项目终端',
             'Toggle Terminal': '切换终端',
             'toggle terminal': '切换终端',
             'Open Terminal': '打开终端',
@@ -1828,6 +1850,18 @@ if (typeof window !== 'undefined' && !window.__ANTIGRAVITY_ZH_PATCHED__) {
             {
                 pattern: /^Work\s+with\s+local\s+agents\s+from\s+another\s+device\.?/i,
                 replace: '从另一台设备控制与协作本地智能体。'
+            },
+            {
+                pattern: /^Standalone\s+Terminals?$/i,
+                replace: '独立终端'
+            },
+            {
+                pattern: /^Delete\s+Terminal$/i,
+                replace: '删除终端'
+            },
+            {
+                pattern: /^Remove\s+Terminal$/i,
+                replace: '移除终端'
             }
         ];
 
