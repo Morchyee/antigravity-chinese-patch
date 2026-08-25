@@ -434,6 +434,82 @@ function patchMainProcess(tempUnpackDir) {
     }
 }
 
+function patchWizardHtml(tempUnpackDir) {
+    const wizardHtmlPath = path.join(tempUnpackDir, 'dist', 'ideInstall', 'wizardHtml.js');
+    if (!fs.existsSync(wizardHtmlPath)) {
+        return;
+    }
+
+    let content = fs.readFileSync(wizardHtmlPath, 'utf8');
+    const replacements = [
+        ['<title>Welcome to Antigravity</title>', '<title>欢迎来到 Antigravity</title>'],
+        ['Setting up…', '正在准备中…'],
+        ['Welcome to the new Antigravity!', '欢迎来到全新的 Antigravity！'],
+        [
+            'Antigravity has been redesigned to put agents first with new capabilities. If you\'d still like a code editor, you can download it as a separate app named <b>Antigravity IDE</b>.',
+            'Antigravity 已全新重构，带来以智能体为核心的强大能力。如果您仍需要代码编辑器，可单独下载名为 <b>Antigravity IDE</b> 的独立应用。'
+        ],
+        ['Download the Antigravity IDE', '下载 Antigravity IDE'],
+        ['Explore the new Antigravity', '开始探索全新的 Antigravity']
+    ];
+
+    let modified = false;
+    for (const [search, replace] of replacements) {
+        if (content.includes(search)) {
+            content = content.replace(search, replace);
+            modified = true;
+        }
+    }
+
+    if (modified) {
+        fs.writeFileSync(wizardHtmlPath, content, 'utf8');
+        logSuccess('IDE 安装与欢迎向导汉化完成。');
+    }
+}
+
+function patchTrayAndMenu(tempUnpackDir) {
+    const trayJsPath = path.join(tempUnpackDir, 'dist', 'tray.js');
+    if (fs.existsSync(trayJsPath)) {
+        let content = fs.readFileSync(trayJsPath, 'utf8');
+        let modified = false;
+        if (content.includes("'No' + ' agent' + (count === 1 ? '' : 's') + ' running'")) {
+            content = content.replace(
+                "(count > 0 ? `${count}` : 'No') +\n                    ' agent' +\n                    (count === 1 ? '' : 's') +\n                    ' running'",
+                "(count > 0 ? `${count} 个智能体正在运行` : '当前无运行中的智能体')"
+            );
+            modified = true;
+        } else if (content.includes("' agent'")) {
+            content = content.replace(
+                /(count > 0 \? `\$\{count\}` : ['"]No['"])\s*\+\s*['"] agent['"]\s*\+\s*\(count === 1 \? ['"]['"] : ['"]s['"]\)\s*\+\s*['"] running['"]/g,
+                "(count > 0 ? `${count} 个智能体正在运行` : '当前无运行中的智能体')"
+            );
+            modified = true;
+        }
+        if (modified) {
+            fs.writeFileSync(trayJsPath, content, 'utf8');
+            logSuccess('系统托盘动态状态汉化完成。');
+        }
+    }
+
+    const menuJsPath = path.join(tempUnpackDir, 'dist', 'menu.js');
+    if (fs.existsSync(menuJsPath)) {
+        let content = fs.readFileSync(menuJsPath, 'utf8');
+        let modified = false;
+        if (content.includes("label: 'New Window'")) {
+            content = content.replace("label: 'New Window'", "label: '新建窗口'");
+            modified = true;
+        }
+        if (content.includes("label: 'Docs'")) {
+            content = content.replace("label: 'Docs'", "label: '官方文档'");
+            modified = true;
+        }
+        if (modified) {
+            fs.writeFileSync(menuJsPath, content, 'utf8');
+            logSuccess('原生菜单栏汉化完成。');
+        }
+    }
+}
+
 function inferUnpackDirs(sidecarPath) {
     if (!fs.existsSync(sidecarPath)) {
         return [];
@@ -601,6 +677,8 @@ async function main() {
         injectPreload(tempUnpackDir, args.force);
         patchLoadingOverlay(tempUnpackDir);
         patchMainProcess(tempUnpackDir);
+        patchWizardHtml(tempUnpackDir);
+        patchTrayAndMenu(tempUnpackDir);
         packAndSwap(tempUnpackDir, asarPath, args.dryRun);
     } catch (err) {
         logError(err.message);
