@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0 - 2026-08-25
+
+- Fully adapted for Antigravity v2.10.0 release.
+- Added comprehensive translations for Embedded Terminal (e.g. `Standalone Terminals`, `Delete Terminal`, `Add Terminal`, `New Terminal`, introduction banners, and shortcuts).
+- Added Git-Native Version Control & Review panel translations (e.g. `Review`, `Staged Changes`, `Unstaged Changes`, `Commit`, `Stage All`, `Discard Changes`).
+- Added Application Settings and Remote Control panel localization (`Manage Antigravity app settings`, `Enable Remote Control`, `Work with local agents from another device`).
+- Added empty state localization across all auxiliary panels (e.g. `No file changes`, `No active terminals`, `No active subagents`, `No active artifacts`, `No active tasks`).
+- Added native macOS menu, Dock menu, and system tray dynamic agent status translation (`No agents running`, `X agents running`).
+- Added full Chinese localization for the standalone IDE onboarding/welcome wizard (`wizardHtml.js`).
+- Expanded Chat canvas, voice recording, thinking budget, and typo-tolerant search translations.
+
 ## 0.3.15 - 2026-06-13
 
 - Added translation mapping and regex rules for model quota limits, dynamic remaining time, and AI credit balances.
