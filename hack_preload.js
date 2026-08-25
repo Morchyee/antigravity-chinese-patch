@@ -117,12 +117,38 @@ if (typeof window !== 'undefined' && !window.__ANTIGRAVITY_ZH_PATCHED__) {
             'logs': '日志',
             'No subagents active': '当前无活动子智能体',
             'no subagents active': '当前无活动子智能体',
+            'No active subagents': '无活动子智能体',
+            'no active subagents': '无活动子智能体',
+            'No active subagent': '无活动子智能体',
+            'no active subagent': '无活动子智能体',
             'No artifacts created': '尚未创建工件',
             'no artifacts created': '尚未创建工件',
+            'No active artifacts': '无活动工件',
+            'no active artifacts': '无活动工件',
+            'No active artifact': '无活动工件',
+            'no active artifact': '无活动工件',
             'No files changed': '没有文件被修改',
             'no files changed': '没有文件被修改',
+            'No file changes': '无文件修改',
+            'no file changes': '无文件修改',
+            'No file change': '无文件修改',
+            'no file change': '无文件修改',
             'No open terminals': '没有打开的终端',
             'no open terminals': '没有打开的终端',
+            'No active terminals': '无活动终端',
+            'no active terminals': '无活动终端',
+            'No active terminal': '无活动终端',
+            'no active terminal': '无活动终端',
+            'No active tasks': '无活动任务',
+            'no active tasks': '无活动任务',
+            'No active task': '无活动任务',
+            'no active task': '无活动任务',
+            'No changes to review': '无需要审查的更改',
+            'no changes to review': '无需要审查的更改',
+            'No review items': '无审查项',
+            'no review items': '无审查项',
+            'No diff to display': '无差异可显示',
+            'no diff to display': '无差异可显示',
             'Errored': '出错',
             'errored': '出错',
             'Canceled': '已取消',
@@ -1862,6 +1888,34 @@ if (typeof window !== 'undefined' && !window.__ANTIGRAVITY_ZH_PATCHED__) {
             {
                 pattern: /^Remove\s+Terminal$/i,
                 replace: '移除终端'
+            },
+            {
+                pattern: /^No\s+file\s+changes?$/i,
+                replace: '无文件修改'
+            },
+            {
+                pattern: /^No\s+active\s+terminals?$/i,
+                replace: '无活动终端'
+            },
+            {
+                pattern: /^No\s+active\s+subagents?$/i,
+                replace: '无活动子智能体'
+            },
+            {
+                pattern: /^No\s+active\s+tasks?$/i,
+                replace: '无活动任务'
+            },
+            {
+                pattern: /^No\s+active\s+artifacts?$/i,
+                replace: '无活动工件'
+            },
+            {
+                pattern: /^No\s+open\s+terminals?$/i,
+                replace: '没有打开的终端'
+            },
+            {
+                pattern: /^No\s+files?\s+changed$/i,
+                replace: '没有文件被修改'
             }
         ];
 
