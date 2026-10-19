@@ -106,7 +106,7 @@ function run(command, args, options = {}) {
 function runAsar(args, options = {}) {
     const localAsar = localAsarCommand();
     if (fs.existsSync(localAsar)) {
-        run(localAsar, args, options);
+        run(process.execPath, [path.join(__dirname, 'node_modules', '@electron', 'asar', 'bin', 'asar.mjs'), ...args], options);
         return;
     }
     run(npxCommand(), ['--yes', '@electron/asar', ...args], options);
